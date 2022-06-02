@@ -2,10 +2,12 @@
 #include <fstream>
 #include <iostream>
 
+#include <opencv2/core/core.hpp>
+
 using namespace std;
 
 int main(void) {
-    int n = 4096;
+    int n = 128;
     complex<long double> z, c;
 
     // open a file to save the calculated mandelbrot points
