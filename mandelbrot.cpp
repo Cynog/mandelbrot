@@ -5,7 +5,7 @@
 using namespace std;
 
 int main(void) {
-    int n = 128;
+    int n = 4096;
     complex<long double> z, c;
 
     // open a file to save the calculated mandelbrot points
@@ -30,16 +30,17 @@ int main(void) {
 
             z = c;
 
+            int k_write = 255;
             for (int k = 1; k < 255; k++) {
                 z = z * z + c;
 
                 if (norm(z) > 2) {
-                    fprintf(file, "%d %d %d\n", i, j, k);
-                    continue;
+                    k_write = k;
+                    break;
                 }
             }
 
-            fprintf(file, "%d %d %d\n", i, j, 255);
+            fprintf(file, "%d %d %d\n", i, j, k_write);
         }
     }
 
