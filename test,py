@@ -1,0 +1,31 @@
+import numpy as np
+import cv2
+
+
+with open("mandelbrot.dat", "r") as file:
+    data = file.read().split("\n")
+    data.pop()
+    
+img = np.zeros(shape=[128, 128], dtype=np.uint8)
+    
+notyet = True
+for d in data:
+    if not notyet:
+        print("after ", img[i, j])
+        
+    triple = d.split(" ")
+    val = np.uint8(triple[2])
+    img[int(triple[0]), int(triple[1])] = val
+    
+    if notyet:
+        if img[int(triple[0]), int(triple[1])] != 0 and img[int(triple[0]), int(triple[1])] != 255:
+            i = int(triple[0])
+            j = int(triple[1])
+            print(img[i, j])
+            notyet = False
+            
+print(img[i, j])
+            
+cv2.imshow("mandelbrot", img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
