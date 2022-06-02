@@ -1,39 +1,49 @@
 #include <complex>
 #include <fstream>
 #include <iostream>
-
 #include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <omp.h>
 
+using namespace cv;
 using namespace std;
 
 int main(void) {
-    int n = 128;
-    complex<long double> z, c;
+    // number of grid points in real and imag component
+    int n = 4096;
 
-    // open a file to save the calculated mandelbrot points
-    FILE* file;
-    file = fopen("mandelbrot.dat", "w");
-    if (!file) {
-        cerr << "Error: file could not be opened" << endl;
-        exit(1);
-    }
+    // area to calculate
+    long double min_re, max_re, min_im, max_im;
+    min_re = -2.;
+    max_re = 2.;
+    min_im = -2.;
+    max_im = 2.;
 
-    // calculate the mandelbrot points
+    // delta in real and imaginary part
+    long double delta_re, delta_im;
+    delta_re = max_re - min_re;
+    delta_im = max_im - min_im;
+
+    // image
+    Mat img(n, n, CV_8UC1);
+
+    // calculate the pixels of the image
+    #pragma omp parallel for num_threads(omp_get_max_threads())
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            c = complex<long double>(
-                -2. + 4. * (long double)(i) / (long double)(n),
-                -2. + 4. * (long double)(j) / (long double)(n));
+            complex<long double> c = complex<long double>(
+                min_re + delta_re * (long double)(i) / (long double)(n),
+                min_im + delta_im * (long double)(j) / (long double)(n));
 
             if (norm(c) > 2) {
-                fprintf(file, "%d %d %d\n", i, j, 0);
+                img.at<uint8_t>(j, i) = 0;
                 continue;
             }
 
-            z = c;
+            complex<long double> z = c;
 
-            int k_write = 255;
-            for (int k = 1; k < 255; k++) {
+            uint8_t k_write = 255;
+            for (uint8_t k = 1; k < 255; k++) {
                 z = z * z + c;
 
                 if (norm(z) > 2) {
@@ -42,10 +52,10 @@ int main(void) {
                 }
             }
 
-            fprintf(file, "%d %d %d\n", i, j, k_write);
+            img.at<uint8_t>(j, i) = k_write;
         }
     }
 
-    // close the file
-    fclose(file);
+    // save the image
+    imwrite("mandelbrot.png", img);
 }
