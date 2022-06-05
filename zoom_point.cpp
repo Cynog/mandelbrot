@@ -6,10 +6,10 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
+#include "mandelbrot.hpp"
+
 using namespace cv;
 using namespace std;
-
-int intpow(int base, int exp);
 
 int main(void) {
     // number of grid points in real and imag component for each tile
@@ -69,14 +69,4 @@ int main(void) {
         sprintf(filename, "zoom/z%d.png", z);
         imwrite(filename, img);
     }
-}
-
-int intpow(int base, int exp) {
-    int result = 1;
-
-    for (int k = 0; k < exp; k++) {
-        result *= base;
-    }
-
-    return result;
 }

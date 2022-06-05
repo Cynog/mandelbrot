@@ -6,17 +6,17 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
+#include "mandelbrot.hpp"
+
 using namespace cv;
 using namespace std;
-
-int intpow(int base, int exp);
 
 int main(void) {
     // number of grid points in real and imag component for each tile
     int n = 1024;
 
-    for (int z = 0; z <= 4; z++) {  // zoom
-        for (int it = 0; it < intpow(2, z); it++) {  // tiles rows
+    for (int z = 0; z <= 4; z++) {                       // zoom
+        for (int it = 0; it < intpow(2, z); it++) {      // tiles rows
             for (int jt = 0; jt < intpow(2, z); jt++) {  // tiles colums
                 // delta in real and imaginary part
                 long double delta_re, delta_im;
@@ -29,13 +29,14 @@ int main(void) {
                 min_im = -2. + delta_im * jt;
 
                 // print information on the current rendering region
-                printf("z=%d   it=%d   jt=%d   min_re=%Lg   min_im=%Lg\n", z, it, jt, min_re, min_im); 
- 
+                printf("z=%d   it=%d   jt=%d   min_re=%Lg   min_im=%Lg\n", z,
+                       it, jt, min_re, min_im);
+
                 // empty image
                 Mat img(n, n, CV_8UC1);
 
-                // calculate the pixels of the image
-                #pragma omp parallel for num_threads(omp_get_max_threads())
+// calculate the pixels of the image
+#pragma omp parallel for num_threads(omp_get_max_threads())
                 for (int i = 0; i < n; i++) {
                     for (int j = 0; j < n; j++) {
                         complex<long double> c = complex<long double>(
@@ -71,14 +72,4 @@ int main(void) {
             }
         }
     }
-}
-
-int intpow(int base, int exp) {
-    int result = 1;
-
-    for (int k=0; k<exp; k++) {
-        result *= base;
-    }
-
-    return result;
 }
