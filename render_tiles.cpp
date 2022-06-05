@@ -66,7 +66,7 @@ int main(void) {
                 }
                 // save the image
                 char filename[100];
-                sprintf(filename, "render/z%d/%d_%d.png", z, it, jt);
+                sprintf(filename, "tiles/z%d/%d_%d.png", z, it, jt);
                 imwrite(filename, img);
             }
         }
