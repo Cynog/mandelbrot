@@ -16,7 +16,6 @@ int main(void) {
     int n = 1024;
 
     for (int z = 0; z <= 4; z++) {  // zoom
-#pragma omp parallel for num_threads(omp_get_max_threads())
         for (int it = 0; it < intpow(2, z); it++) {  // tiles rows
             for (int jt = 0; jt < intpow(2, z); jt++) {  // tiles colums
                 // delta in real and imaginary part
@@ -36,6 +35,7 @@ int main(void) {
                 Mat img(n, n, CV_8UC1);
 
                 // calculate the pixels of the image
+                #pragma omp parallel for num_threads(omp_get_max_threads())
                 for (int i = 0; i < n; i++) {
                     for (int j = 0; j < n; j++) {
                         complex<long double> c = complex<long double>(
