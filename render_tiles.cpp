@@ -5,6 +5,8 @@
 #include <iostream>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/imgproc.hpp>
 
 #include "mandelbrot.hpp"
 
@@ -32,8 +34,9 @@ int main(void) {
                 printf("z=%d   it=%d   jt=%d   min_re=%Lg   min_im=%Lg\n", z,
                        it, jt, min_re, min_im);
 
-                // empty image
+                // empty image grayscale and color
                 Mat img(n, n, CV_8UC1);
+                Mat img_color;
 
 // calculate the pixels of the image
 #pragma omp parallel for num_threads(omp_get_max_threads())
@@ -65,10 +68,13 @@ int main(void) {
                         img.at<uint8_t>(j, i) = k_write;
                     }
                 }
+                // apply colormap
+                applyColorMap(img, img_color, COLORMAP_JET);
+
                 // save the image
                 char filename[100];
                 sprintf(filename, "tiles/z%d/%d_%d.png", z, it, jt);
-                imwrite(filename, img);
+                imwrite(filename, img_color);
             }
         }
     }
