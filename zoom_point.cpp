@@ -21,7 +21,7 @@ int main(void) {
     long double re = -4.621603e-1;
     long double im = -5.823998e-1;
 
-    for (int z = 0; z <= 16; z++) {  // zoom
+    for (int z = 0; z <= 32; z++) {  // zoom
         // delta in real and imaginary part
         long double delta_re, delta_im;
         delta_re = 4. / (long double)(intpow(2, z));
@@ -55,11 +55,11 @@ int main(void) {
                 complex<long double> z = c;
 
                 uint8_t k_write = 255;
-                for (uint8_t k = 1; k < 255; k++) {
+                for (int k = 1; k < 255*10; k++) {
                     z = z * z + c;
 
                     if (norm(z) > 2) {
-                        k_write = k;
+                        k_write = k/10;
                         break;
                     }
                 }
