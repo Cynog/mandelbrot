@@ -9,7 +9,7 @@
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
 
-int intpow(int base, int exp);
+long int intpow(int base, int exp);
 
 cv::Vec3b colormap(int k);
 
