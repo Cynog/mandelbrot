@@ -1,6 +1,5 @@
 #include <omp.h>
 
-#include <complex>
 #include <fstream>
 #include <iostream>
 #include <opencv2/core/core.hpp>
@@ -15,7 +14,7 @@ using namespace std;
 
 int main(void) {
     // number of grid points in real and imag component for each tile
-    int n = 1024;
+    int res = 1024;
 
     // point to zoom in
     long double re = -4.621603e-1;
@@ -28,51 +27,18 @@ int main(void) {
         delta_im = 4. / (long double)(intpow(2, z));
 
         // area to calculate
-        long double min_re, min_im;
-        min_re = re - delta_re / 2.0;
-        min_im = im - delta_im / 2.0;
+        long double re_min = re - delta_re / 2.0;
+        long double im_min = im - delta_im / 2.0;
 
         // print information on the current rendering region
         printf("z=%d\n", z);
 
-        // empty image grayscale and color
-        Mat img(n, n, CV_8UC1);
-        Mat img_color;
-
-// calculate the pixels of the image
-#pragma omp parallel for num_threads(omp_get_max_threads())
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                complex<long double> c = complex<long double>(
-                    min_re + delta_re * (long double)(i) / (long double)(n),
-                    min_im + delta_im * (long double)(j) / (long double)(n));
-
-                if (norm(c) > 2) {
-                    img.at<uint8_t>(j, i) = 0;
-                    continue;
-                }
-
-                complex<long double> z = c;
-
-                uint8_t k_write = 255;
-                for (int k = 1; k < 255*10; k++) {
-                    z = z * z + c;
-
-                    if (norm(z) > 2) {
-                        k_write = k/10;
-                        break;
-                    }
-                }
-
-                img.at<uint8_t>(j, i) = k_write;
-            }
-        }
-        // apply colormap
-        applyColorMap(img, img_color, COLORMAP_JET);
+        // render the image
+        Mat img = render_image(re_min, im_min, delta_re, delta_im, res, res);
 
         // save the image
         char filename[100];
         sprintf(filename, "zoom/z%d.png", z);
-        imwrite(filename, img_color);
+        imwrite(filename, img);
     }
 }
