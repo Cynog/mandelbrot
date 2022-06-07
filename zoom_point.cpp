@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <filesystem>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgcodecs.hpp>
@@ -9,8 +10,7 @@
 
 #include "mandelbrot.hpp"
 
-using namespace cv;
-using namespace std;
+namespace fs = std::filesystem;
 
 int main(void) {
     // number of grid points in real and imag component for each tile
@@ -20,6 +20,11 @@ int main(void) {
     long double re = -0.462160252884326494537958751607;
     long double im = -0.582399837100775696896448607731;
 
+    // create folder
+    char dir[100] = "zoom/";
+    fs::create_directory(dir);
+
+    // calculate the zoomed images
     for (int z = 0; z <= 37; z++) {  // zoom
         // delta in real and imaginary part
         long double delta_re, delta_im;
@@ -34,11 +39,11 @@ int main(void) {
         printf("z=%d\n", z);
 
         // render the image
-        Mat img = render_image(re_min, im_min, delta_re, delta_im, res, res);
+        cv::Mat img = render_image(re_min, im_min, delta_re, delta_im, res, res);
 
         // save the image
         char filename[100];
-        sprintf(filename, "zoom/z%d.png", z);
+        sprintf(filename, "%sz%d.png", dir, z);
         imwrite(filename, img);
     }
 }

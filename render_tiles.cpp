@@ -1,6 +1,7 @@
 #include <omp.h>
 
 #include <complex>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <opencv2/core/core.hpp>
@@ -10,14 +11,20 @@
 
 #include "mandelbrot.hpp"
 
-using namespace cv;
-using namespace std;
+namespace fs = std::filesystem;
 
 int main(void) {
     // number of grid points in real and imag component for each tile
     int res = 1024;
 
-    for (int z = 0; z <= 2; z++) {                       // zoom
+    // create folder
+    fs::create_directory("tiles/");
+    for (int z = 0; z <= 2; z++) {  // zoom
+        // create subfolder
+        char dir[100];
+        sprintf(dir, "tiles/z%d/", z);
+        fs::create_directory(dir);
+
         for (int it = 0; it < intpow(2, z); it++) {      // tiles rows
             for (int jt = 0; jt < intpow(2, z); jt++) {  // tiles colums
                 // delta in real and imaginary part
@@ -32,11 +39,11 @@ int main(void) {
                 printf("z=%d   it=%d   jt=%d   min_re=%Lg   min_im=%Lg\n", z, it, jt, re_min, im_min);
 
                 // render the image
-                Mat img = render_image(re_min, im_min, delta_re, delta_im, res, res);
+                cv::Mat img = render_image(re_min, im_min, delta_re, delta_im, res, res);
 
                 // save the image
                 char filename[100];
-                sprintf(filename, "tiles/z%d/%d_%d.png", z, it, jt);
+                sprintf(filename, "%s%d_%d.png", dir, it, jt);
                 imwrite(filename, img);
             }
         }
