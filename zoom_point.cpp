@@ -17,10 +17,10 @@ int main(void) {
     int res = 1024;
 
     // point to zoom in
-    long double re = -4.621603e-1;
-    long double im = -5.823998e-1;
+    long double re = -0.462160252884326494537958751607;
+    long double im = -0.582399837100775696896448607731;
 
-    for (int z = 0; z <= 32; z++) {  // zoom
+    for (int z = 0; z <= 37; z++) {  // zoom
         // delta in real and imaginary part
         long double delta_re, delta_im;
         delta_re = 4. / (long double)(intpow(2, z));

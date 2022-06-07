@@ -55,3 +55,19 @@ cv::Mat render_image(long double re_min, long double im_min, long double delta_r
     // return image
     return img_color;
 }
+
+std::complex<long double> calculate_point_from_zoom_image(int z, long double re, long double im, int i, int j, int resx, int resy) {
+    // delta in real and imaginary part
+    long double delta_re = 4. / (long double)(intpow(2, z));
+    long double delta_im = 4. / (long double)(intpow(2, z));
+
+    // area to calculate
+    long double re_min = re - delta_re / 2.0;
+    long double im_min = im - delta_im / 2.0;
+
+    // calculate the corresponding point
+    std::complex<long double> c = std::complex<long double>(re_min + delta_re * (long double)(i) / (long double)(resx), im_min + delta_im * (long double)(j) / (long double)(resy));
+
+    // return the corresponding point
+    return c;
+}
