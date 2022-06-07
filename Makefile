@@ -4,14 +4,17 @@ LIBS = mandelbrot.o
 HDRS = mandelbrot.hpp
 
 
+main: main.o $(LIBS)
+	$(CXX) -o $@.out $^ $(FLAGS) && ./main.out
+
 calculate_point: calculate_point.o $(LIBS)
-	$(CXX) -o calculate_point.out $^ $(FLAGS) && ./calculate_point.out
+	$(CXX) -o $@.out $^ $(FLAGS) && ./calculate_point.out
 
 zoom_point: zoom_point.o $(LIBS)
-	$(CXX) -o zoom_point.out $^ $(FLAGS) && ./zoom_point.out
+	$(CXX) -o $@.out $^ $(FLAGS) && ./zoom_point.out
 
 render_tiles: render_tiles.o $(LIBS)
-	$(CXX) -o render_tiles.out $^ $(FLAGS) && ./render_tiles.out
+	$(CXX) -o $@.out $^ $(FLAGS) && ./render_tiles.out
 
 %.o: %.cpp $(HDRS)
 	$(CXX) $(FLAGS) -c $<
