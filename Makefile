@@ -5,21 +5,11 @@ HDRS = mandelbrot.hpp
 
 
 main: main.o $(LIBS)
-	$(CXX) -o $@.out $^ $(CXXFLAGS) && ./$@.out
-
-calculate_point: calculate_point.o $(LIBS)
-	$(CXX) -o $@.out $^ $(CXXFLAGS) && ./$@.out
-
-zoom_point: zoom_point.o $(LIBS)
-	$(CXX) -o $@.out $^ $(CXXFLAGS) && ./$@.out
-
-render_tiles: render_tiles.o $(LIBS)
-	$(CXX) -o $@.out $^ $(CXXFLAGS) && ./$@.out
-
+	$(CXX) -o $@.out $^ $(CXXFLAGS)
 
 %.o: %.cpp $(HDRS)
 	$(CXX) $(CXXFLAGS) -c $<
-
+	
 
 clean:
 	rm -f *.o *.out
