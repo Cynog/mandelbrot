@@ -163,7 +163,7 @@ int main(int argc, char *argv[]) {
             z_min, x, y, pixel_x, pixel_y, res, res);
 
         // print the point
-        printf("The point is %.30Lf %.30Lf\n", c.real(), c.imag());
+        printf("The point is -x %.50Lf -y %.50Lf\n", c.real(), c.imag());
     }
 
     // return

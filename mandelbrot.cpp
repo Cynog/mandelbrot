@@ -37,7 +37,7 @@ cv::Mat render_image(long double re_min, long double im_min, long double delta_r
             std::complex<long double> z = c;
 
             uint8_t k_write = 255;
-            for (int k = 1; k < 255*50; k++) {
+            for (int k = 1; k < 255*100; k++) {
                 z = z * z + c;
 
                 if (norm(z) > 2) {
