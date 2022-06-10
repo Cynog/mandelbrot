@@ -12,4 +12,4 @@ main: main.o $(LIBS)
 	
 
 clean:
-	rm -f *.o *.out
+	rm -rf *.o *.out tiles/* zoom/*
