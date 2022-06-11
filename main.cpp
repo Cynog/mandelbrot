@@ -1,4 +1,5 @@
 #include <gmp.h>
+#include <mpfr.h>
 #include <unistd.h>
 
 #include <filesystem>
@@ -17,9 +18,10 @@ int main(int argc, char *argv[]) {
     char ch;
     int p = 0;  // standart program is zoom
     int z_min = 0, z_max = 4;
-    long double x = -0.462160252884326494537958751607,
-                y = -0.582399837100775696896448607731;
-    int res = 1024;
+    mpfr_t x, y;
+    mpfr_init2(x, PREC);
+    mpfr_init2(y, PREC);
+    int res = 512;
     int pixel_x = 0, pixel_y = 0;
     char *val;
 
@@ -55,10 +57,10 @@ int main(int argc, char *argv[]) {
                 z_max = strtol(val, NULL, 10);
                 break;
             case 'x':
-                x = strtold(optarg, NULL);
+                mpfr_set_str(x, optarg, 10, RND);
                 break;
             case 'y':
-                y = strtold(optarg, NULL);
+                mpfr_set_str(y, optarg, 10, RND);
                 break;
             case 'r':
                 res = strtol(optarg, NULL, 10);
@@ -85,8 +87,8 @@ int main(int argc, char *argv[]) {
 
     // print all the parameters after parsing
     std::cout << "p " << p << std::endl;
-    std::cout << "x " << x << std::endl;
-    std::cout << "y " << y << std::endl;
+    std::cout << "x " << mpfr_get_ld(x, RND) << std::endl;
+    std::cout << "y " << mpfr_get_ld(y, RND) << std::endl;
     std::cout << "z_min " << z_min << std::endl;
     std::cout << "z_max " << z_max << std::endl;
     std::cout << "res " << res << std::endl;
@@ -102,27 +104,37 @@ int main(int argc, char *argv[]) {
 
         // calculate the zoomed images
         for (int z = z_min; z <= z_max; z++) {  // zoom
-            // delta in real and imaginary part
-            long double delta_x = 4. / (long double)(intpow(2, z));
-            long double delta_y = 4. / (long double)(intpow(2, z));
-
-            // area to calculate
-            long double x_min = x - delta_x / 2.0;
-            long double y_min = y - delta_y / 2.0;
-
             // print information on the current rendering region
             printf("z=%d\n", z);
 
+            // delta in real and imaginary part
+            mpfr_t delta_x, delta_y;
+            mpfr_init2(delta_x, PREC);
+            mpfr_init2(delta_y, PREC);
+            mpfr_set_d(delta_x, 4.0, RND);
+            mpfr_set_d(delta_y, 4.0, RND);
+            mpfr_div_ui(delta_x, delta_x, intpow(2, z), RND);
+            mpfr_div_ui(delta_y, delta_y, intpow(2, z), RND);
+            
+            // area to calculate
+            mpfr_t x_min, y_min;
+            mpfr_init2(x_min, PREC);
+            mpfr_init2(y_min, PREC);
+            mpfr_div_d(x_min, delta_x, 2.0, RND);
+            mpfr_div_d(y_min, delta_y, 2.0, RND);
+            mpfr_sub(x_min, x, x_min, RND);
+            mpfr_sub(y_min, y, y_min, RND);
+
             // render the image
-            cv::Mat img =
-                render_image(x_min, y_min, delta_x, delta_y, res, res);
+            cv::Mat img = render_image(x_min, y_min, delta_x, delta_y, res, res);
 
             // save the image
             char filename[100];
             sprintf(filename, "%sz%d.png", dir, z);
             imwrite(filename, img);
         }
-    } else if (p == 1) {
+    }//TODO
+    /** else if (p == 1) {
         // create folder
         fs::create_directory("tiles/");
         for (int z = z_min; z <= z_max; z++) {  // zoom
@@ -134,12 +146,12 @@ int main(int argc, char *argv[]) {
             for (int it = 0; it < intpow(2, z); it++) {      // tiles rows
                 for (int jt = 0; jt < intpow(2, z); jt++) {  // tiles colums
                     // delta in real and imaginary part
-                    long double delta_x = 4. / (long double)(intpow(2, z));
-                    long double delta_y = 4. / (long double)(intpow(2, z));
+                    mpfr_t delta_x = 4. / (mpfr_t)(intpow(2, z));
+                    mpfr_t delta_y = 4. / (mpfr_t)(intpow(2, z));
 
                     // area to calculate
-                    long double x_min = -2. + delta_x * it;
-                    long double y_min = -2. + delta_y * jt;
+                    mpfr_t x_min = -2. + delta_x * it;
+                    mpfr_t y_min = -2. + delta_y * jt;
 
                     // print information on the current rendering region
                     printf("z=%d   it=%d   jt=%d   min_re=%Lg   min_im=%Lg\n",
@@ -158,12 +170,12 @@ int main(int argc, char *argv[]) {
         }
     } else if (p == 2) {
         // calculate the corresponding point from the image
-        std::complex<long double> c = calculate_point_from_zoom_image(
+        std::complex<mpfr_t> c = calculate_point_from_zoom_image(
             z_min, x, y, pixel_x, pixel_y, res, res);
 
         // print the point
         printf("The point is -x %.50Lf -y %.50Lf\n", c.real(), c.imag());
-    }
+    }**/
 
     // return
     return 0;
