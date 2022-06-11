@@ -61,7 +61,7 @@ cv::Mat render_image(mpfr_t &x_min, mpfr_t &y_min, mpfr_t &delta_x, mpfr_t &delt
 
             // iterate
             uint8_t k_write = 255;
-            for (int k = 1; k < 255*50; k++) {
+            for (int k = 1; k < 255*100; k++) {
                 // z = z*z + c
                 // square z_x and z_y
                 mpfr_pow_si(z_x_2, z_x, 2, RND);
