@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -Wall -O3 `pkg-config --cflags --libs mpfr opencv4` -fopenmp
+CXXFLAGS = -std=c++17 -Wall -O3 `pkg-config --cflags --libs mpfr opencv4` -fopenmp
 LIBS = mandelbrot.o
 HDRS = mandelbrot.hpp
 
