@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -Wall -O3 -fopenmp `pkg-config --cflags --libs opencv4`
+CXXFLAGS = -Wall -O3 -fopenmp -lgmp `pkg-config --cflags --libs opencv4`
 LIBS = mandelbrot.o
 HDRS = mandelbrot.hpp
 
@@ -12,4 +12,7 @@ main: main.o $(LIBS)
 	
 
 clean:
-	rm -rf *.o *.out tiles/* zoom/*
+	rm -rf *.o *.out
+
+clean_zoom:
+	rm -f zoom/*
