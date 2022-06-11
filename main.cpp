@@ -126,7 +126,7 @@ int main(int argc, char *argv[]) {
             mpfr_sub(y_min, y, y_min, RND);
 
             // render the image
-            cv::Mat img = render_image(x_min, y_min, delta_x, delta_y, res, res);
+            cv::Mat img = render_image_mpfr(x_min, y_min, delta_x, delta_y, res, res);
 
             // save the image
             char filename[100];

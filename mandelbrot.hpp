@@ -18,7 +18,7 @@ unsigned long int intpow(unsigned int base, int exp);
 
 cv::Vec3b colormap(int k);
 
-cv::Mat render_image(mpfr_t &x_min, mpfr_t &y_min, mpfr_t &delta_x, mpfr_t &delta_y, int resx, int resy);
+cv::Mat render_image_mpfr(mpfr_t &x_min, mpfr_t &y_min, mpfr_t &delta_x, mpfr_t &delta_y, int resx, int resy);
 
 long double mpfr_norm(mpfr_t &x, mpfr_t &y);
 

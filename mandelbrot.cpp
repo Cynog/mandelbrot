@@ -18,7 +18,7 @@ cv::Vec3b colormap(int k) {  // TODO
     return pixel;
 }
 
-cv::Mat render_image(mpfr_t &x_min, mpfr_t &y_min, mpfr_t &delta_x, mpfr_t &delta_y, int res_x, int res_y) {
+cv::Mat render_image_mpfr(mpfr_t &x_min, mpfr_t &y_min, mpfr_t &delta_x, mpfr_t &delta_y, int res_x, int res_y) {
     // empty image grayscale and color
     cv::Mat img(res_y, res_x, CV_8UC1);
     cv::Mat img_color;
@@ -61,7 +61,8 @@ cv::Mat render_image(mpfr_t &x_min, mpfr_t &y_min, mpfr_t &delta_x, mpfr_t &delt
 
             // iterate
             uint8_t k_write = 255;
-            for (int k = 1; k < 255*100; k++) {
+            int factor = 40; // TODO find good value
+            for (int k = 1; k < 255*factor; k++) {
                 // z = z*z + c
                 // square z_x and z_y
                 mpfr_pow_si(z_x_2, z_x, 2, RND);
