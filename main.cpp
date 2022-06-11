@@ -1,8 +1,7 @@
-#include <omp.h>
+#include <gmp.h>
 #include <unistd.h>
 
 #include <filesystem>
-#include <fstream>
 #include <iostream>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>

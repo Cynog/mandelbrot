@@ -1,5 +1,6 @@
 #pragma once
 
+#include <gmp.h>
 #include <omp.h>
 
 #include <complex>
@@ -9,7 +10,7 @@
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
 
-long int intpow(int base, int exp);
+long long int intpow(int base, int exp);
 
 cv::Vec3b colormap(int k);
 

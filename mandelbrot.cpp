@@ -1,7 +1,8 @@
 #include "mandelbrot.hpp"
 
-long int intpow(int base, int exp) {
-    long int result = 1;
+// 
+long long int intpow(int base, int exp) {
+    long long int result = 1;
 
     for (int k = 0; k < exp; k++) {
         result *= base;
