@@ -1,21 +1,127 @@
 #include "mandelbrot.hpp"
 
-unsigned long int intpow(unsigned int base, int exp) {
-    unsigned long int result = 1;
-
-    for (int k = 0; k < exp; k++) {
-        result *= base;
-    }
-
-    return result;
-}
-
 cv::Vec3b colormap(int k) {  // TODO
     // RGB triple to return
     cv::Vec3b pixel;
 
     // return the RGB triple
     return pixel;
+}
+
+cv::Mat render_image_f(float x_min, float y_min, float delta_x, float delta_y, int res_x, int res_y) {
+    // empty image grayscale and color
+    cv::Mat img(res_y, res_x, CV_8UC1);
+    cv::Mat img_color;
+
+    // calculate the pixels of the image
+    #pragma omp parallel for num_threads(omp_get_max_threads())
+    for (int i = 0; i < res_x; i++) {
+        for (int j = 0; j < res_y; j++) {
+            std::complex<float> c = std::complex<float>(x_min + delta_x * (float)(i) / (float)(res_x), y_min + delta_y * (float)(j) / (float)(res_y));
+
+            if (norm(c) > 2) {
+                img.at<uint8_t>(j, i) = 0;
+                continue;
+            }
+
+            std::complex<float> z = c;
+
+            uint8_t k_write = 255;
+            for (int k = 1; k < 255*100; k++) {
+                z = z * z + c;
+
+                if (norm(z) > 2) {
+                    k_write = k%255;
+                    break;
+                }
+            }
+
+            img.at<uint8_t>(j, i) = k_write;
+        }
+    }
+    // apply colormap
+    applyColorMap(img, img_color, cv::COLORMAP_JET);
+
+    // return image
+    return img_color;
+}
+
+cv::Mat render_image_d(double x_min, double y_min, double delta_x, double delta_y, int res_x, int res_y) {
+    // empty image grayscale and color
+    cv::Mat img(res_y, res_x, CV_8UC1);
+    cv::Mat img_color;
+
+    // calculate the pixels of the image
+    #pragma omp parallel for num_threads(omp_get_max_threads())
+    for (int i = 0; i < res_x; i++) {
+        for (int j = 0; j < res_y; j++) {
+            std::complex<double> c = std::complex<double>(x_min + delta_x * (double)(i) / (double)(res_x), y_min + delta_y * (double)(j) / (double)(res_y));
+
+            if (norm(c) > 2) {
+                img.at<uint8_t>(j, i) = 0;
+                continue;
+            }
+
+            std::complex<double> z = c;
+
+            uint8_t k_write = 255;
+            for (int k = 1; k < 255*100; k++) {
+                z = z * z + c;
+
+                if (norm(z) > 2) {
+                    k_write = k%255;
+                    break;
+                }
+            }
+
+            img.at<uint8_t>(j, i) = k_write;
+        }
+    }
+    // apply colormap
+    applyColorMap(img, img_color, cv::COLORMAP_JET);
+
+    // return image
+    return img_color;
+}
+
+cv::Mat render_image_ld(long double x_min, long double y_min, long double delta_x, long double delta_y, int res_x, int res_y) {
+    // empty image grayscale and color
+    cv::Mat img(res_y, res_x, CV_8UC1);
+    cv::Mat img_color;
+
+    std::cout << std::endl << delta_x << std::endl;
+
+    // calculate the pixels of the image
+    #pragma omp parallel for num_threads(omp_get_max_threads())
+    for (int i = 0; i < res_x; i++) {
+        for (int j = 0; j < res_y; j++) {
+            std::complex<long double> c = std::complex<long double>(x_min + delta_x * (long double)(i) / (long double)(res_x), y_min + delta_y * (long double)(j) / (long double)(res_y));
+
+            if (norm(c) > 2) {
+                img.at<uint8_t>(j, i) = 0;
+                continue;
+            }
+
+            std::complex<long double> z = c;
+
+            uint8_t k_write = 255;
+            for (int k = 1; k < 255*100; k++) {
+                z = z * z + c;
+
+                if (norm(z) > 2) {
+                    k_write = k%255;
+                    break;
+                }
+            }
+
+            img.at<uint8_t>(j, i) = k_write;
+        }
+    }
+    // apply colormap
+    applyColorMap(img, img_color, cv::COLORMAP_JET);
+
+    // return image
+    return img_color;
 }
 
 cv::Mat render_image_mpfr(mpfr_t &x_min, mpfr_t &y_min, mpfr_t &delta_x, mpfr_t &delta_y, int res_x, int res_y) {
@@ -61,8 +167,7 @@ cv::Mat render_image_mpfr(mpfr_t &x_min, mpfr_t &y_min, mpfr_t &delta_x, mpfr_t 
 
             // iterate
             uint8_t k_write = 255;
-            int factor = 40; // TODO find good value
-            for (int k = 1; k < 255*factor; k++) {
+            for (int k = 1; k < 255*40; k++) {
                 // z = z*z + c
                 // square z_x and z_y
                 mpfr_pow_si(z_x_2, z_x, 2, RND);
@@ -128,19 +233,19 @@ long double mpfr_norm(mpfr_t &x, mpfr_t &y) {
 //TODO
 /** std::complex<mpfr_t> calculate_point_from_zoom_image(int z, mpfr_t re,
                                                      mpfr_t im, int i, int j,
-                                                     int resx, int resy) {
+                                                     int res_x, int res_y) {
     // delta in real and imaginary part
-    mpfr_t delta_re = 4. / (mpfr_t)(intpow(2, z));
-    mpfr_t delta_im = 4. / (mpfr_t)(intpow(2, z));
+    mpfr_t delta_x = 4. / (mpfr_t)(intpow(2, z));
+    mpfr_t delta_y = 4. / (mpfr_t)(intpow(2, z));
 
     // area to calculate
-    mpfr_t re_min = re - delta_re / 2.0;
-    mpfr_t im_min = im - delta_im / 2.0;
+    mpfr_t x_min = re - delta_x / 2.0;
+    mpfr_t y_min = im - delta_y / 2.0;
 
     // calculate the corresponding point
     std::complex<mpfr_t> c =
-        std::complex<mpfr_t>(re_min + delta_re * (mpfr_t)(i) / (mpfr_t)(resx),
-                             im_min + delta_im * (mpfr_t)(j) / (mpfr_t)(resy));
+        std::complex<mpfr_t>(x_min + delta_x * (mpfr_t)(i) / (mpfr_t)(res_x),
+                             y_min + delta_y * (mpfr_t)(j) / (mpfr_t)(res_y));
 
     // return the corresponding point
     return c;

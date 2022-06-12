@@ -23,10 +23,11 @@ int main(int argc, char *argv[]) {
     mpfr_init2(y, PREC);
     int res = 512;
     int pixel_x = 0, pixel_y = 0;
+    int d = 2; // standart data type is long double
     char *val;
 
     // parse command line arguments
-    while ((ch = getopt(argc, argv, "p:z:x:y:r:i:")) != EOF) {
+    while ((ch = getopt(argc, argv, "p:z:x:y:r:i:d:")) != EOF) {
         switch (ch) {
             case 'p':  // program zoom or program tiles
                 if (strcmp(optarg, "zoom") == 0) {
@@ -80,7 +81,21 @@ int main(int argc, char *argv[]) {
                 }
                 pixel_y = strtol(val, NULL, 10);
                 break;
-            default:
+            case 'd': // datatype float, double, long double, mpfr
+                if (strcmp(optarg, "f") == 0) {
+                    d = 0;
+                } else if (strcmp(optarg, "d") == 0) {
+                    d = 1;
+                } else if (strcmp(optarg, "ld") == 0) {
+                    d = 2;
+                } else if (strcmp(optarg, "mpfr") == 0) {
+                    d = 3;
+                } else {
+                    std::cout << "error" << std::endl;
+                    return 1;
+                }
+                break;
+            default: // undefined flag passed //TODO print help
                 return 1;
         }
     }
@@ -94,6 +109,7 @@ int main(int argc, char *argv[]) {
     std::cout << "res " << res << std::endl;
     std::cout << "pixel_x " << pixel_x << std::endl;
     std::cout << "pixel_y " << pixel_y << std::endl;
+    std::cout << "d " << d << std::endl;
     std::cout << std::endl;
 
     // execute the requested programs
@@ -113,8 +129,13 @@ int main(int argc, char *argv[]) {
             mpfr_init2(delta_y, PREC);
             mpfr_set_d(delta_x, 4.0, RND);
             mpfr_set_d(delta_y, 4.0, RND);
-            mpfr_div_ui(delta_x, delta_x, intpow(2, z), RND);
-            mpfr_div_ui(delta_y, delta_y, intpow(2, z), RND);
+            mpfr_t powz;
+            mpfr_init2(powz, PREC);
+            mpfr_set_ui(powz, 2, RND);
+            mpfr_pow_ui(powz, powz, z, RND);
+            mpfr_div(delta_x, delta_x, powz, RND);
+            mpfr_div(delta_y, delta_y, powz, RND);
+            mpfr_clear(powz);
             
             // area to calculate
             mpfr_t x_min, y_min;
@@ -126,7 +147,16 @@ int main(int argc, char *argv[]) {
             mpfr_sub(y_min, y, y_min, RND);
 
             // render the image
-            cv::Mat img = render_image_mpfr(x_min, y_min, delta_x, delta_y, res, res);
+            cv::Mat img;
+            if (d == 0) { // float
+                img = render_image_f(mpfr_get_flt(x_min, RND), mpfr_get_flt(y_min, RND), mpfr_get_flt(delta_x, RND), mpfr_get_flt(delta_y, RND), res, res);
+            } else if (d == 1) { // double
+                img = render_image_d(mpfr_get_d(x_min, RND), mpfr_get_d(y_min, RND), mpfr_get_d(delta_x, RND), mpfr_get_d(delta_y, RND), res, res);
+            } else if (d == 2) { //long double
+                img = render_image_ld(mpfr_get_ld(x_min, RND), mpfr_get_ld(y_min, RND), mpfr_get_ld(delta_x, RND), mpfr_get_ld(delta_y, RND), res, res);
+            } else { // mpfr
+                img = render_image_mpfr(x_min, y_min, delta_x, delta_y, res, res);
+            }
 
             // save the image
             char filename[100];
