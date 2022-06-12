@@ -88,9 +88,7 @@ cv::Mat render_image_ld(long double x_min, long double y_min, long double delta_
     // empty image grayscale and color
     cv::Mat img(res_y, res_x, CV_8UC1);
     cv::Mat img_color;
-
-    std::cout << std::endl << delta_x << std::endl;
-
+    
     // calculate the pixels of the image
     #pragma omp parallel for num_threads(omp_get_max_threads())
     for (int i = 0; i < res_x; i++) {

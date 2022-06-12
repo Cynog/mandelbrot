@@ -127,8 +127,8 @@ int main(int argc, char *argv[]) {
             mpfr_t delta_x, delta_y;
             mpfr_init2(delta_x, PREC);
             mpfr_init2(delta_y, PREC);
-            mpfr_set_d(delta_x, 4.0, RND);
-            mpfr_set_d(delta_y, 4.0, RND);
+            mpfr_set_ui(delta_x, 4, RND);
+            mpfr_set_ui(delta_y, 4, RND);
             mpfr_t powz;
             mpfr_init2(powz, PREC);
             mpfr_set_ui(powz, 2, RND);
@@ -141,8 +141,8 @@ int main(int argc, char *argv[]) {
             mpfr_t x_min, y_min;
             mpfr_init2(x_min, PREC);
             mpfr_init2(y_min, PREC);
-            mpfr_div_d(x_min, delta_x, 2.0, RND);
-            mpfr_div_d(y_min, delta_y, 2.0, RND);
+            mpfr_div_ui(x_min, delta_x, 2, RND);
+            mpfr_div_ui(y_min, delta_y, 2, RND);
             mpfr_sub(x_min, x, x_min, RND);
             mpfr_sub(y_min, y, y_min, RND);
 
