@@ -90,7 +90,7 @@ cv::Mat render_image_ld(long double x_min, long double y_min, long double delta_
     cv::Mat img_color;
     
     // calculate the pixels of the image
-    #pragma omp parallel for num_threads(omp_get_max_threads())
+    #pragma omp parallel for schedule(dynamic) num_threads(omp_get_max_threads())
     for (int i = 0; i < res_x; i++) {
         for (int j = 0; j < res_y; j++) {
             std::complex<long double> c = std::complex<long double>(x_min + delta_x * (long double)(i) / (long double)(res_x), y_min + delta_y * (long double)(j) / (long double)(res_y));
