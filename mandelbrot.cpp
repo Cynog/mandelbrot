@@ -14,7 +14,7 @@ cv::Mat render_image_f(float x_min, float y_min, float delta_x, float delta_y, i
     cv::Mat img_color;
 
     // calculate the pixels of the image
-    #pragma omp parallel for num_threads(omp_get_max_threads())
+    #pragma omp parallel for schedule(dynamic) num_threads(omp_get_max_threads())
     for (int i = 0; i < res_x; i++) {
         for (int j = 0; j < res_y; j++) {
             std::complex<float> c = std::complex<float>(x_min + delta_x * (float)(i) / (float)(res_x), y_min + delta_y * (float)(j) / (float)(res_y));
