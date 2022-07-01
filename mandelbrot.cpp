@@ -52,7 +52,7 @@ cv::Mat render_image_d(double x_min, double y_min, double delta_x, double delta_
     cv::Mat img_color;
 
     // calculate the pixels of the image
-    #pragma omp parallel for num_threads(omp_get_max_threads())
+    #pragma omp parallel for schedule(dynamic) num_threads(omp_get_max_threads())
     for (int i = 0; i < res_x; i++) {
         for (int j = 0; j < res_y; j++) {
             std::complex<double> c = std::complex<double>(x_min + delta_x * (double)(i) / (double)(res_x), y_min + delta_y * (double)(j) / (double)(res_y));
@@ -127,8 +127,8 @@ cv::Mat render_image_mpfr(mpfr_t &x_min, mpfr_t &y_min, mpfr_t &delta_x, mpfr_t 
     cv::Mat img(res_y, res_x, CV_8UC1);
     cv::Mat img_color;
 
-// calculate the pixels of the image
-#pragma omp parallel for num_threads(THREADNUM)
+    // calculate the pixels of the image
+    #pragma omp parallel for schedule(dynamic) num_threads(omp_get_max_threads())
     for (int i = 0; i < res_x; i++) {
         for (int j = 0; j < res_y; j++) {
             mpfr_t c_x; // = x_min + delta_x * i/res_x
